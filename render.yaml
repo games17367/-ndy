@@ -1,0 +1,23 @@
+# Render.com Blueprint: Backend und Website in einem Dienst.
+# Schlüssel (sync: false) trägst du im Render-Dashboard ein – sie stehen nie im Repository.
+services:
+  - type: web
+    name: aendy
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: BRAVE_API_KEY
+        sync: false
+      - key: ACCESS_CODE
+        sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: TRUST_PROXY
+        value: "true"

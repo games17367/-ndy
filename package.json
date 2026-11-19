@@ -1,0 +1,21 @@
+{
+  "name": "aendy",
+  "version": "1.2.0",
+  "description": "ÄNDY – dein persönlicher, extrem humorvoller KI-Sprachassistent als Website (PWA).",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev": "node --watch backend/src/server.js",
+    "test": "node --test backend/test/*.test.js tests/*.test.js",
+    "test:backend": "node --test backend/test/*.test.js",
+    "test:frontend": "node --test tests/*.test.js",
+    "start:env": "node --env-file=backend/.env backend/src/server.js",
+    "test:e2e": "node tests/e2e/flow.cjs",
+    "test:pages": "node tests/e2e/pages.cjs"
+  },
+  "license": "MIT"
+}

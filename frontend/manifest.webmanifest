@@ -1,0 +1,29 @@
+{
+  "name": "Ändy – dein KI-Sprachassistent",
+  "short_name": "Ändy",
+  "description": "Ändy ist ein humorvoller KI-Sprachassistent. Sag „Sarvus Ändy“ und rede los.",
+  "lang": "de",
+  "dir": "ltr",
+  "id": "./",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#05040d",
+  "theme_color": "#05040d",
+  "categories": ["productivity", "utilities", "entertainment"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ändy wecken",
+      "short_name": "Wecken",
+      "description": "Öffnet Ändy und wartet auf einen Tipp zum Zuhören",
+      "url": "./?start=1",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

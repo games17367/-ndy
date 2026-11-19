@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <title>Ändy – dein KI-Sprachassistent</title>
+  <meta name="description" content="Ändy ist ein humorvoller KI-Sprachassistent im Browser. Sag „Sarvus Ändy“ und rede los.">
+  <meta name="theme-color" content="#05040d">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: data:; connect-src 'self' https: http://localhost:* http://127.0.0.1:*; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./icons/favicon-16.png">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Ändy">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="preload" href="./img/andy.jpg" as="image">
+  <link rel="preload" href="./fonts/poppins-300.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="./fonts/poppins-500.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="./css/app.css">
+</head>
+<body data-state="sleeping">
+  <div class="bg" aria-hidden="true"><span class="glow glow-a"></span><span class="glow glow-b"></span></div>
+
+  <div id="app" class="app">
+    <header class="top">
+      <h1 class="brand" aria-label="Ändy">
+        <span class="brand-a" aria-hidden="true">Ä</span><span aria-hidden="true">ndy</span>
+      </h1>
+      <button id="wake-chip" class="chip" type="button" data-mode="off" aria-label="Weckwort">
+        <span class="chip-dot" aria-hidden="true"></span>
+        <span id="wake-text">Mikro aus</span>
+      </button>
+      <div class="top-actions">
+        <div class="vol">
+          <button id="btn-vol" class="icon-btn" type="button" aria-label="Lautstärke" aria-expanded="false"></button>
+          <div id="vol-pop" class="vol-pop" hidden>
+            <input id="vol" class="range" type="range" min="0" max="1" step="0.05" value="1" aria-label="Lautstärke">
+          </div>
+        </div>
+        <button id="btn-log" class="icon-btn" type="button" aria-label="Verlauf, Notizen und Erinnerungen" aria-expanded="false" aria-controls="drawer"></button>
+        <button id="btn-settings" class="icon-btn" type="button" aria-label="Einstellungen" aria-haspopup="dialog"></button>
+      </div>
+    </header>
+
+    <div id="banners" class="banners" role="status" aria-live="polite"></div>
+
+    <main class="stage">
+      <div class="orb-wrap">
+        <canvas id="core" role="img" aria-label="Ändys KI-Kern"></canvas>
+        <button id="core-tap" class="orb-hit" type="button" aria-label="Ändy wecken" aria-pressed="false">
+          <img class="orb-photo" src="./img/andy.jpg" alt="" width="880" height="1868" decoding="async" fetchpriority="high" draggable="false">
+        </button>
+      </div>
+      <p id="state-label" class="state" aria-live="polite">Ändy schläft</p>
+      <p id="caption" class="caption" aria-live="polite"></p>
+      <div id="timers" class="timers" aria-label="Laufende Timer"></div>
+      <div id="cards" class="cards"></div>
+    </main>
+
+    <footer class="dock">
+      <div class="dock-tools">
+        <button id="btn-stop" class="pill pill-stop" type="button" hidden>Zuhören beenden</button>
+      </div>
+      <form id="composer" class="composer" autocomplete="off">
+        <div class="field">
+          <input id="text" type="text" name="message" inputmode="text" enterkeyhint="send" autocomplete="off" autocapitalize="sentences" spellcheck="true" placeholder="Schreib Ändy etwas" aria-label="Nachricht an Ändy" maxlength="1000">
+          <button id="btn-send" class="send" type="submit" aria-label="Senden" hidden></button>
+        </div>
+        <button id="btn-mic" class="mic" type="button" aria-label="Ändy wecken" aria-pressed="false"></button>
+      </form>
+      <p id="hint" class="hint"></p>
+    </footer>
+  </div>
+
+  <aside id="drawer" class="drawer" aria-label="Verlauf" hidden>
+    <div class="drawer-head">
+      <div class="tabs" role="tablist" aria-label="Bereiche">
+        <button class="tab" role="tab" type="button" data-tab="log" aria-selected="true">Verlauf</button>
+        <button class="tab" role="tab" type="button" data-tab="notes" aria-selected="false">Notizen</button>
+        <button class="tab" role="tab" type="button" data-tab="reminders" aria-selected="false">Erinnerungen</button>
+      </div>
+      <button id="drawer-close" class="icon-btn small" type="button" aria-label="Schließen"></button>
+    </div>
+    <section id="panel-log" class="panel" role="tabpanel" data-panel="log">
+      <div id="log" class="log" aria-live="off"></div>
+      <p id="log-empty" class="empty">Noch nichts gesagt. Sag „Sarvus Ändy“ oder schreib mir unten etwas.</p>
+    </section>
+    <section id="panel-notes" class="panel" role="tabpanel" data-panel="notes" hidden>
+      <form id="note-form" class="inline-form">
+        <input id="note-input" type="text" placeholder="Neue Notiz" aria-label="Neue Notiz" maxlength="500">
+        <button class="pill" type="submit">Speichern</button>
+      </form>
+      <ul id="note-list" class="items"></ul>
+      <p id="notes-empty" class="empty">Keine Notizen. Sag zum Beispiel: „Ändy, notiere: Milch kaufen.“</p>
+    </section>
+    <section id="panel-reminders" class="panel" role="tabpanel" data-panel="reminders" hidden>
+      <ul id="reminder-list" class="items"></ul>
+      <p id="reminders-empty" class="empty">Keine Erinnerungen. Sag zum Beispiel: „Ändy, erinnere mich morgen um 8 an Mama.“</p>
+    </section>
+  </aside>
+  <div id="scrim" class="scrim" hidden></div>
+
+  <div id="settings" class="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <div class="sheet-head">
+      <h2 id="settings-title">Einstellungen</h2>
+      <button id="settings-close" class="icon-btn small" type="button" aria-label="Einstellungen schließen"></button>
+    </div>
+    <nav id="settings-nav" class="settings-nav" aria-label="Bereiche der Einstellungen"></nav>
+    <div id="settings-body" class="sheet-body"></div>
+  </div>
+
+  <div id="onboarding" class="overlay" role="dialog" aria-modal="true" aria-labelledby="ob-title" hidden>
+    <div class="overlay-inner">
+      <h2 id="ob-title" class="ob-title">Sarvus! Ich bin Ändy.</h2>
+      <p id="ob-text" class="ob-text">Dein Sprachassistent mit Schmäh. Sag „Sarvus Ändy“ oder tippe auf mein Gesicht, dann reden wir.</p>
+      <div id="ob-options" class="ob-options"></div>
+      <p id="ob-note" class="ob-note"></p>
+      <div class="ob-actions">
+        <button id="ob-start" class="pill pill-primary" type="button">Los geht’s</button>
+        <button id="ob-text-only" class="pill pill-ghost" type="button">Nur schreiben</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <noscript><p class="noscript">Ändy braucht JavaScript, um zuzuhören und zu antworten.</p></noscript>
+
+  <script src="./config.js"></script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
